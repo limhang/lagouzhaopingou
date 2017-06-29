@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>行情分析</title>
+    <!-- 引入 echarts.js -->
+    <script src="echarts.min.js"></script>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <!-- Bootstrap styles -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- Font-Awesome -->
+    <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css">
+
+    <!-- Google Webfonts -->
+    <!--<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600|PT+Serif:400,400italic' rel='stylesheet' type='text/css'>-->
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css" id="theme-styles">
+
+    <link rel="stylesheet" href="css/mook.css" id="theme-styles">
+
+</head>
+<body>
+
+<!--<div id="web" style="width: 600px;height:400px;float: left;"></div>-->
+<!--<div id="iOS" style="width: 600px;height:400px;float: left;"></div>-->
+<!--<div id="php" style="width: 600px;height:400px;float: left;"></div>-->
+<!--<div id="python" style="width: 600px;height:400px;float: left;"></div>-->
+<!--<div id="java" style="width: 600px;height:400px;float: left;"></div>-->
+<!--<div id="Android" style="width: 600px;height:400px;float: left;"></div>-->
+
+
+<header>
+    <div class="widewrapper masthead">
+        <div class="container">
+            <a href="index.html" id="logo">
+                <img src="img/logo.png" alt="clean Blog">
+            </a>
+            <div id="mobile-nav-toggle" class="pull-right">
+                <a href="#" data-toggle="collapse" data-target=".clean-nav .navbar-collapse">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+            <nav class="pull-right clean-nav">
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a class="hvr-overline-from-center button2" href="index.html">主页</a></li>
+                        <li><a class="hvr-overline-from-center button2 active" href="graphics.html">行情分析</a></li>
+                        <li><a class="hvr-overline-from-center button2" href="web.html">web前端</a></li>
+                        <li><a class="hvr-overline-from-center button2" href="php.html">php后端</a></li>
+                        <li><a class="hvr-overline-from-center button2" href="contact.html">移动端</a></li>
+                        <li><a class="hvr-overline-from-center button2" href="python.html">python</a></li>
+                        <!--知识分享-->
+                    </ul>
+                </div>
+            </nav>
+
+        </div>
+    </div>
+</header>
+
+
+
+<div id="web" style="width: 600px;height:400px;"></div>
+<div id="iOS" style="width: 600px;height:400px;"></div>
+<div id="php" style="width: 600px;height:400px;"></div>
+<div id="python" style="width: 600px;height:400px;"></div>
+<div id="java" style="width: 600px;height:400px;"></div>
+<div id="Android" style="width: 600px;height:400px;"></div>
+
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChartiOS = echarts.init(document.getElementById('iOS'));
+    var myChartweb = echarts.init(document.getElementById('web'));
+    var myChartphp = echarts.init(document.getElementById('php'));
+    var myChartjava = echarts.init(document.getElementById('java'));
+    var myChartpython = echarts.init(document.getElementById('python'));
+    var myChartAndroid = echarts.init(document.getElementById('Android'));
+
+
+    // 指定图表的配置项和数据
+
+    var xmlhttp;
+    var city = new Array();
+    var zhao_job = new Array();
+    var lg_job = new Array();
+//    getDataAjax('iOS_data.php');
+    setTimeout(function(){
+        getDataAjax('iOS_data.php');
+    },500);
+    getDataAjax('web_data.php');
+
+    setTimeout(function(){
+        getDataAjax('php_data.php');
+    },1000);
+
+    setTimeout(function(){
+        getDataAjax('python_data.php');
+    },1500);
+
+    setTimeout(function(){
+        getDataAjax('java_data.php');
+    },2000);
+
+    setTimeout(function(){
+        getDataAjax('android_data.php');
+    },2500);
+
+//    getDataAjax('python_data.php');
+//
+//    getDataAjax('php_data.php');
+//
+//    getDataAjax('java_data.php');
+//
+//    getDataAjax('Android_data.php');
+
+
+    function getDataAjax(url) {
+        if (window.XMLHttpRequest)
+        {
+            //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+            xmlhttp=new XMLHttpRequest();
+        }
+        else
+        {
+            // IE6, IE5 浏览器执行代码
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange=function()
+        {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+                city = [];zhao_job = [];lg_job = [];
+                var json = xmlhttp.responseText;
+                var data_analysis = JSON.parse(json);
+                for (var i=0 ; i<data_analysis.length; i++) {
+                    city.push(data_analysis[i].lg_location);
+                    zhao_job.push(data_analysis[i].zh_count);
+                    lg_job.push(data_analysis[i].lg_count);
+                }
+                var which_job = jobJudge(data_analysis[1].lg_job);
+                showData(city,lg_job,zhao_job,which_job);
+            }
+        }
+        xmlhttp.open("GET",url,true);
+        xmlhttp.send();
+    }
+
+
+    function jobJudge(job) {
+        if (job == 'iOS') {
+            return 'iOS';
+        } else if (job == 'web') {
+            return 'web';
+        } else if (job == 'php') {
+            return 'php';
+        } else if (job == 'python') {
+            return 'python';
+        } else if (job == 'java') {
+            return 'java';
+        } else if (job == 'Android') {
+            return 'Android';
+        }
+    }
+
+    function showData(location_lg,lg_job,zh_job,which_job) {
+        var option = new Object();
+        option = {
+            title : {
+                text:  which_job + '各地区行情分析',
+                subtext: '数据爬取于网络（今日）'
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['岗位数','简历数']
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    data : location_lg
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                {
+                    name:'岗位数',
+                    type:'bar',
+                    data:lg_job
+
+                },
+                {
+                    name:'简历数',
+                    type:'bar',
+                    data:zh_job
+                }
+            ]
+        };
+        if (which_job == 'iOS') {
+            myChartiOS.setOption(option);
+        } else if (which_job == 'web') {
+            myChartweb.setOption(option);
+        } else if (which_job == 'python') {
+            myChartpython.setOption(option);
+        } else if (which_job == 'php') {
+            myChartphp.setOption(option);
+        } else if (which_job == 'java') {
+            myChartjava.setOption(option);
+        } else if (which_job == 'Android') {
+            myChartAndroid.setOption(option);
+        }
+    }
+</script>
+</body>
+</html>
